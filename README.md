@@ -45,6 +45,7 @@ Random love compatibility percentage (1–100%)
 Example:
 
 Ship Name: Aleon
+
 ❤️ @Alex has a 87% compatibility with @Leon ❤️
 
 /rob <member>
