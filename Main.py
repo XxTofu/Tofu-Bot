@@ -8,7 +8,7 @@ import os
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
-MY_GUILD = discord.Object(id=yourguildid)
+MY_GUILD = discord.Object(id=1469767210959507569)
 
 
 class MyClient(discord.Client):
@@ -38,8 +38,8 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-        channel = member.guild.get_channel(channelid)
-        role = member.guild.get_role(roleid)
+        channel = member.guild.get_channel(welcome channel id)
+        role = member.guild.get_role(role id here)
         to_send = f'Welcome {member.mention} to Rays`s restaurant hope you enjoy!'
         await channel.send(to_send)
         await member.add_roles(role)
@@ -56,97 +56,126 @@ async def joined(ctx: discord.Interaction, member:discord.Member):
 async def git(ctx: discord.Interaction):
     await ctx.response.send_message('Here`s my owner profile on github: https://github.com/XxTofu')
 
-@client.tree.command(name='clear', description='Delete channel messages')
-async def clear(ctx: discord.Interaction, times:int):
-    role = ctx.guild.get_role(roleid)
-    role1 = ctx.guild.get_role(roleid)
-    if role in ctx.user.roles or role1 in ctx.user.roles:
-        await ctx.response.defer(ephemeral=True)
 
-        deleted = await ctx.channel.purge(limit=times)
+@client.tree.command(name='clear', description='Delete channel messages (max 100)')
+@app_commands.checks.has_permissions(manage_messages=True)
+async def clear(ctx: discord.Interaction, times: int):
 
-        await ctx.followup.send(
-            f'✅ Deleted {len(deleted)} messages.',
+    # Limit to 1–100 messages
+    if times < 1 or times > 100:
+        await ctx.response.send_message(
+            "❌ I can only delete between 1 and 100 messages.",
             ephemeral=True
         )
+        return
 
-    else:
-        await ctx.response.send_message('❌ You dont have the necessary permission for that.',
-            ephemeral=True)
+    # Check bot permissions
+    if not ctx.guild.me.guild_permissions.manage_messages:
+        await ctx.response.send_message(
+            "❌ You don't have permission to manage messages.",
+            ephemeral=True
+        )
+        return
+
+    await ctx.response.defer(ephemeral=True)
+
+    deleted = await ctx.channel.purge(limit=times)
+
+    await ctx.followup.send(
+        f'✅ Deleted {len(deleted)} messages.',
+        ephemeral=True
+    )
 
 
 @client.tree.command(name='ban', description='Ban a member from the server')
-async def ban(ctx: discord.Interaction, member: discord.Member, reason: str=None):
-    role = ctx.guild.get_role(roleid)
-    role1 = ctx.guild.get_role(roleid)
-    if role in ctx.user.roles or role1 in ctx.user.roles:
-         await member.ban(reason=reason)
-         await ctx.response.send_message(
-             f'✅{member} was banned! {reason}'
-             )
+@app_commands.checks.has_permissions(ban_members=True)
+async def ban(ctx: discord.Interaction, member: discord.Member, reason: str = None):
 
-    else:
+    if member.top_role >= ctx.user.top_role:
         await ctx.response.send_message(
-            f'❌{ctx.user} does not have the permission for that',
-              ephemeral=True
-            )
-
-@client.tree.command(name='unban', description='Unban a member from the server')
-async def unban(ctx: discord.Interaction, member: discord.User):
-    role = ctx.guild.get_role(roleid)
-    role1 = ctx.guild.get_role(roleid)
-    if role in ctx.user.roles or role1 in ctx.user.roles:
-        async for entry in ctx.guild.bans():
-            if entry.user.id == member.id:
-                await ctx.guild.unban(member)
-                await ctx.response.send_message(
-                    f'✅{member.mention} was unbanned'
-                    )
-                return
-        await ctx.response.send_message(
-            f'❌{member} was not banned'
-            )
-        return
-    else:
-        await ctx.response.send_message(
-            f'❌{ctx.user} does not have the permission for that',
-              ephemeral=True
-            )
-
-@client.tree.command(name='kick', description='Kick a member from the server')
-async def kick(interaction: discord.Interaction, member: discord.Member, reason: str = None):
-
-    role = interaction.guild.get_role(roleid)
-    role1 = interaction.guild.get_role(roleid)
-
-    if role in interaction.user.roles or role1 in interaction.user.roles:
-
-        if member == interaction.user:
-            await interaction.response.send_message(
-                '❌ You cannot kick yourself.',
-                ephemeral=True
-            )
-            return
-
-        if member.top_role >= interaction.user.top_role:
-            await interaction.response.send_message(
-                '❌ You cannot kick someone with an equal or higher role.',
-                ephemeral=True
-            )
-            return
-
-        await member.kick(reason=reason)
-
-        await interaction.response.send_message(
-            f'✅ {member.mention} was kicked.\nReason: {reason or 'No reason provided'}',
+            '❌ You cannot ban someone with an equal or higher role.',
             ephemeral=True
         )
+        return
 
-    else:
-        await interaction.response.send_message(
-            '❌ You do not have permission for that.',
+    if not ctx.guild.me.guild_permissions.ban_members:
+        await ctx.response.send_message(
+            '❌ I don`t have permission to ban members.',
             ephemeral=True
-        )        
+        )
+        return
+
+    await member.ban(reason=reason)
+
+    await ctx.response.send_message(
+        f'✅ {member} was banned.\nReason: {reason or "No reason provided"}'
+    )
+
+
+@client.tree.command(name='unban', description='Unban a member from the server')
+@app_commands.checks.has_permissions(ban_members=True)
+async def unban(ctx: discord.Interaction, member: discord.User):
+
+    if not ctx.guild.me.guild_permissions.ban_members:
+        await ctx.response.send_message(
+            '❌ I don`t have permission to unban members.',
+            ephemeral=True
+        )
+        return
+
+    async for entry in ctx.guild.bans():
+        if entry.user.id == member.id:
+            await ctx.guild.unban(member)
+            await ctx.response.send_message(
+                f'✅ {member.mention} was unbanned.'
+            )
+            return
+
+    await ctx.response.send_message(
+        f'❌ {member} was not banned.',
+        ephemeral=True
+    )
+
+
+@client.tree.command(name='kick', description='Kick a member from the server')
+@app_commands.checks.has_permissions(kick_members=True)
+async def kick(ctx: discord.Interaction, member: discord.Member, reason: str = None):
+
+    if member == ctx.user:
+        await ctx.response.send_message(
+            '❌ You cannot kick yourself.',
+            ephemeral=True
+        )
+        return
+
+    if member.top_role >= ctx.user.top_role:
+        await ctx.response.send_message(
+            '❌ You cannot kick someone with an equal or higher role.',
+            ephemeral=True
+        )
+        return
+
+    if not ctx.guild.me.guild_permissions.kick_members:
+        await ctx.response.send_message(
+            '❌ I don`t have permission to kick members.',
+            ephemeral=True
+        )
+        return
+
+    if member.top_role >= ctx.guild.me.top_role:
+        await ctx.response.send_message(
+            '❌ I cannot kick this member due to role hierarchy.',
+            ephemeral=True
+        )
+        return
+
+    await member.kick(reason=reason)
+
+    await ctx.response.send_message(
+        f'✅ {member.mention} was kicked.\nReason: {reason or "No reason provided"}',
+        ephemeral=True
+    )
+
 
 @client.tree.command(name='ship', description='Calculate love compatibility and generate a cute ship name 💕')
 async def ship(ctx:discord.Interaction, member1: discord.Member, member2 : discord.Member):
@@ -169,11 +198,25 @@ async def ship(ctx:discord.Interaction, member1: discord.Member, member2 : disco
 
 @client.tree.command(name='rob', description='Steal a user`s avatar')
 async def rob(ctx:discord.Interaction, member: discord.Member):
-    if member.display_avatar == member.default_avatar:
-        await ctx.response.send_message(f'Default Discord avatar...')
+    role = ctx.guild.get_role(roleid if you want)you can remove this lines here this one
+    if role in ctx.user.roles:this one
+        if member.display_avatar == member.default_avatar:
+            await ctx.response.send_message('The user has the default avatar')
+        else:
+            await ctx.response.send_message(f'✅Here is the icon: {member.display_avatar}')
     else:
-        await ctx.response.send_message(f'Here is the icon: {member.display_avatar}')
+        await ctx.response.send_message('❌You do not have the role for this ')
 
 
+@clear.error
+@ban.error
+@unban.error
+@kick.error
+async def permission_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.errors.MissingPermissions):
+        await interaction.response.send_message(
+            '❌ You don`t have the required permissions to use this command.',
+            ephemeral=True
+        )
 
 client.run(token)
