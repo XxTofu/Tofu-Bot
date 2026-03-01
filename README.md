@@ -61,8 +61,6 @@ Slash Commands (app_commands)
 
 Role-based moderation logic
 
-Randomized fun features
-
 
 🔐 Permissions Required
 
