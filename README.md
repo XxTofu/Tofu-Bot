@@ -1,4 +1,4 @@
-#🍽️ Rays Restaurant Discord Bot
+🍽️ Rays Restaurant Discord Bot
 
 A powerful and fun moderation + utility Discord bot built using discord.py (app commands / slash commands).
 Designed for community servers, this bot handles moderation, welcome messages, and even adds some fun interactive commands 💕
@@ -62,17 +62,6 @@ Role-based moderation logic
 
 Randomized fun features
 
-🔧 Setup
-
-Install requirements:
-
-pip install discord.py
-
-Run the bot:
-
-python bot.py
-
-Enter your bot token when prompted.
 
 🔐 Permissions Required
 
