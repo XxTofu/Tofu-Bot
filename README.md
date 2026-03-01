@@ -46,8 +46,8 @@ Example:
 
 Ship Name: Aleon
 ❤️ @Alex has a 87% compatibility with @Leon ❤️
-/rob <member>
 
+/rob <member>
 "Steals" and displays a user's avatar
 
 Detects default Discord avatars
