@@ -1,9 +1,5 @@
 # 🍽️ Rays Restaurant Discord Bot
 
-A powerful moderation + economy Discord bot built using **discord.py** with Slash Commands (`app_commands`).
-
-Designed for community servers, this bot combines secure moderation tools, automatic systems, fun interaction commands, and a full gambling-based economy — all using Discord’s built-in permission system.
-
 ---
 
 ## 🚀 Features
